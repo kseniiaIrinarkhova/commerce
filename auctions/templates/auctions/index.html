@@ -2,6 +2,13 @@
 
 {% block body %}
     <h2>Active Listings</h2>
-
-    TODO
+    {% if listings %}
+    <ul>
+    {% for listing in listings %}
+        <li>{{ listing.title }} </li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <p>There is no active items currently. Create the first listing!</p>
+    {% endif %}
 {% endblock %}

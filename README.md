@@ -25,3 +25,4 @@ Basic model structure for current project provided below:
 
 ## Installation
 ## User guide
+superuser: admin (CS50w-2023)

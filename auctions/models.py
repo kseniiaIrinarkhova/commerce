@@ -17,10 +17,11 @@ class Listing(models.Model):
     is_active = models.BooleanField(default=True)
 
 
-class Bit(models.Model):
+class Bid(models.Model):
     bidder = models.ForeignKey("User", on_delete=models.CASCADE)
     context = models.ForeignKey("Listing", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=7, decimal_places=2)
+    bid_date = models.DateTimeField()
 
 
 class Comment(models.Model):
