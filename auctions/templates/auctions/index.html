@@ -3,11 +3,25 @@
 {% block body %}
     <h2>Active Listings</h2>
     {% if listings %}
-    <ul>
+    <div class="collection">
     {% for listing in listings %}
-        <li>{{ listing.title }} </li>
+        <div class ="item">
+            <a href = "{% url 'listing' listing.id %}">
+                <div class="grid_frame">
+                    <div class = "grid_image">
+                        <img src="{{ listing.image }}" alt="Listing item image">
+                    </div>
+                    <h3 class="grid_title"> 
+                        {{ listing.title }}
+                    </h3>
+                    <span class="grid_price">
+                        ${{ listing.price }}
+                    </span>
+                </div>
+            </a>
+        </div>
     {% endfor %}
-    </ul>
+
     {% else %}
     <p>There is no active items currently. Create the first listing!</p>
     {% endif %}

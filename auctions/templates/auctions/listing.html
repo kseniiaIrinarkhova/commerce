@@ -1,0 +1,49 @@
+{% extends "auctions/layout.html" %}
+{% block title %}
+{{listing.title}}
+{% endblock %}
+{% block body %}
+    <div class="breadcrumbs">
+        <a href="{% url 'index' %}">Home</a> >> <a href = "{% url 'listing' listing.id %}">{{ listing.title }}</a>
+    </div>
+    <hr class="breadcrumbs_hr" />
+    <div class="product">
+        <div class="product_image">
+            <img src="{{ listing.image }}" alt="Listing item image">
+        </div>    
+        <div class="product_info">
+            <h1 class="prod_title">
+                {{ listing.title }}
+            </h1>
+            <hr class="prod_hr" />
+            <div class="prod_price">
+                <div class="price">
+                    <span class="price_text">
+                        ${{ listing.price }}
+                    </span>
+                </div>
+            </div>
+            <hr class="prod_hr" />
+            <div class="prod_description">
+                <p>{{ listing.description }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="bid_block">
+        <div class="new_bid">
+            <p>Place your bid (form)</p>
+        </div>
+        <div class="bid_stat">
+            <p>Some kind of statistics...</p>
+        </div>
+    </div>
+    <div class="comment_block">
+        <div class="comment">
+            <div class="comment_text"></div>
+            <div class="comment_reaction"></div>
+        </div>
+        <div class="comment_form">
+            <p>There should be a form for a new comment</p>
+        </div>
+    </div>
+    {% endblock %}
