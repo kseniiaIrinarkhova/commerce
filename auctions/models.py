@@ -18,12 +18,18 @@ class Listing(models.Model):
     created_date = models.DateTimeField()
     closed_date = models.DateTimeField(blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Bid(models.Model):
     bidder = models.ForeignKey("User", on_delete=models.CASCADE)
     context = models.ForeignKey("Listing", on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     bid_date = models.DateTimeField()
+    
+    def __str__(self):
+        return f"{self.bidder}: ${self.price}"
 
 
 class Comment(models.Model):
@@ -33,5 +39,10 @@ class Comment(models.Model):
     like = models.IntegerField(default=0)
     dislike = models.IntegerField(default=0)
 
+
 class Category(models.Model):
     title = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.title
+    
