@@ -15,6 +15,8 @@ class Listing(models.Model):
     category = models.ForeignKey("Category", models.SET_NULL, blank=True, null=True)
     auctioneer = models.ForeignKey("User", on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
+    created_date = models.DateTimeField()
+    closed_date = models.DateTimeField(blank=True, null=True)
 
 
 class Bid(models.Model):
