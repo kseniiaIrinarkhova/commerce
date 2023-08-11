@@ -20,19 +20,25 @@ Basic model structure for current project provided below:
 ### HTML templates and static files
 - **Changes in HTML templates and static files**
 - - *index.html*
-    Provide information of all active listings. 
+    Provided information of all active listings. 
+- - *layout.html*
+    Added links for creation new listing
+- **New HTML templates**
 - - *listing.html*
     Provide detailed information about listing. Provide information about bids and comments.
-- **New HTML templates**
+- - *new_listing.html*
+    Provide template tfor creation a new listing    
 ### Changes in __urls.py__
 File __urls.py__ provided information about all paths in application. Additional list of paths provided below.
-- '''path("<int:listing_id>", views.listing, name="listing")''' path for listing item
+- ```path("listing/<int:listing_id>", views.listing, name="listing")``` path for listing item
+- ```path("listing/new", views.new_listing, name="new_listing")``` path for creation new listing item
 ### Changes in __views.py__
 - changings in **index** view
 Added list of active listings to the view.
 - **listing** view
 Provided information for listing page
-
+- **new_listing** view
+Showed algorithm of creation a new listing.
 ## Installation
 ## User guide
 superuser: admin (CS50w-2023)
