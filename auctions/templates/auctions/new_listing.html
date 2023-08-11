@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+{% block title %}
+    Create new Listing
+{% endblock %}
+{% block body %}
+<h1> Create a new entry.</h1>
+<form action="{% url 'new_listing' %}" method="post">
+    {% csrf_token %}
+    <div class="form">
+       <div class="lable">Listing title: </div>
+       <div class="field">{{form.title}}</div> 
+    <div class="lable">Detailed description: </div>
+    <div class="field">{{form.description}}</div>
+    <div class="lable">Price in $: </div>
+    <div class="field">{{form.price}}</div>
+    <div class="lable">URL address for the image of the item:</div>
+    <div class="field">{{form.image}}</div>
+    <div class="lable">Choose the category: </div>
+    <div class="field">{{form.category}}</div>
+    <div class="lable"></div>
+    <div class="field"><input type="submit"></div>
+    {{form.auctioneer.as_hidden}}
+    {{form.is_active.as_hidden}}
+    {{form.created_date.as_hidden}}
+    {{form.closed_date.as_hidden}}
+    
+    </div>
+</form>
+{% endblock %}

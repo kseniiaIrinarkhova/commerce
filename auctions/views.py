@@ -3,8 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
-from .models import User, Listing, Bid
+from django.forms import ModelForm
+import datetime
+from django.contrib.auth.decorators import login_required
+from .models import User, Listing, Bid, Category
 
 
 def index(request):
@@ -68,4 +70,36 @@ def listing(request, listing_id):
     listing = Listing.objects.get(pk = listing_id)
     return render(request, "auctions/listing.html", {
         "listing": listing
+    })
+
+class ListingForm(ModelForm):
+    class Meta:
+        model = Listing
+        fields = ['title', 'description', 'price', 'image', 'category', 'auctioneer', 'is_active', 'created_date', 'closed_date']
+
+@login_required
+def new_listing(request):
+    print("we are here")
+    if request.method == "POST":
+        print(request)
+        form = ListingForm(request.POST)
+        print(form)
+        if form.is_valid():
+            print("Form is valid")
+            newListing = form.save()
+            newListing.save()
+            print(newListing)
+            return HttpResponseRedirect(reverse("listing", args=(newListing.id,)))
+        else:
+           print("Form is not valid")
+           return render(request, "auctions/new_listing.html", {
+            "form" : form
+            }) 
+    form = ListingForm()
+    form.fields["auctioneer"].initial = User.objects.get(username=request.user.username)
+    form.fields["created_date"].initial = datetime.datetime.now()
+    form.fields["is_active"].initial = True
+    print(form)
+    return render(request, "auctions/new_listing.html", {
+        "form" : form
     })
