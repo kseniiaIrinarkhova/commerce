@@ -67,9 +67,15 @@ def register(request):
         return render(request, "auctions/register.html")
     
 def listing(request, listing_id):
+    print("Listing view")
     listing = Listing.objects.get(pk = listing_id)
+    if request.user.is_authenticated:
+        is_editable =  listing.auctioneer == User.objects.get(username = request.user.username)
+    else:
+        is_editable = False
     return render(request, "auctions/listing.html", {
-        "listing": listing
+        "listing": listing,
+        "is_editable": is_editable 
     })
 
 class ListingForm(ModelForm):
@@ -79,27 +85,66 @@ class ListingForm(ModelForm):
 
 @login_required
 def new_listing(request):
-    print("we are here")
     if request.method == "POST":
         print(request)
         form = ListingForm(request.POST)
         print(form)
         if form.is_valid():
-            print("Form is valid")
             newListing = form.save()
             newListing.save()
-            print(newListing)
             return HttpResponseRedirect(reverse("listing", args=(newListing.id,)))
         else:
-           print("Form is not valid")
-           return render(request, "auctions/new_listing.html", {
+           return render(request, "auctions/editor.html", {
+            "title" : "New listing",
+            "action" : "new_listing",
+            "listing_id": None,
             "form" : form
             }) 
     form = ListingForm()
     form.fields["auctioneer"].initial = User.objects.get(username=request.user.username)
     form.fields["created_date"].initial = datetime.datetime.now()
     form.fields["is_active"].initial = True
-    print(form)
-    return render(request, "auctions/new_listing.html", {
+    return render(request, "auctions/editor.html", {
+        "title" : "New listing",
+        "action" : "new_listing",
+        "listing_id": None,
         "form" : form
     })
+
+@login_required
+def my_listings(request):
+    user = User.objects.get(username = request.user.username)
+    return render(request,"auctions/owner_list.html", {
+        "active_list": Listing.objects.filter(auctioneer = user, is_active = True),
+        "closed_list": Listing.objects.filter(auctioneer = user, is_active = False) 
+    })
+
+@login_required
+def edit(request, listing_id):
+    print("Edit view")
+    listing = Listing.objects.get(pk = listing_id)
+    print(listing)
+    if listing is not None:
+        if request.method == "POST":
+            form = ListingForm(request.POST, instance=listing)
+            print(form)
+            if form.is_valid():
+                print("Valid form")
+                form.save()
+                return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+            else:
+                print("Not valid form")
+                return render(request, "auctions/editor.html", {
+                    "title" : f"{listing.title} - Edit",
+                    "listing_id" : listing_id,
+                    "action" : "edit",
+                    "form" : form
+                }) 
+        print("Get")    
+        form = ListingForm(instance=listing)
+        return render(request, "auctions/editor.html", {
+            "title" : f"{listing.title} - Edit",
+            "listing_id" : listing_id,
+            "action" : "edit",
+            "form" : form
+        })

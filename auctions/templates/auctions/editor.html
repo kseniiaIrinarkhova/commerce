@@ -1,10 +1,14 @@
 {% extends "auctions/layout.html" %}
 {% block title %}
-    Create new Listing
+{{title}}
 {% endblock %}
 {% block body %}
+{% if listing_id is None  %}
 <h1> Create a new entry.</h1>
-<form action="{% url 'new_listing' %}" method="post">
+<form action="{% url action %}" method="post">
+{% else %}
+<form action="{% url action listing_id %}" method="post">
+{% endif %}
     {% csrf_token %}
     <div class="form">
        <div class="lable">Listing title: </div>

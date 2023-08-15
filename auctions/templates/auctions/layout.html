@@ -24,9 +24,15 @@
                 <li>
                     <a class="nav-link" href="{% url 'new_listing' %}">Create new listing</a>
                 </li>
+                <li>
+                    <a class="nav-link" href="{% url 'my_listings' %}">My listings</a>
+                </li>
+                
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                 </li>
+                {% block navigation%}
+                {% endblock %}
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Log In</a>

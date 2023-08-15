@@ -1,0 +1,50 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Active Listings</h2>
+{% if active_list %}
+<div class="active_list_table">
+    {% for item in active_list %}
+    <div class="row">
+        <div class="col_img">
+            <img src="{{ item.image }}" alt="Listing item image">
+        </div>
+        <div class="col_title">
+            {{ item.title }}
+        </div>
+        <div class="col_bid">
+            ${{ item.price}} / $ bid
+        </div>
+        <div class="col_actions">
+            <a href="{% url 'edit' item.id %}">Edit</a>
+            <button>Close</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p> You don't have any active listings. Create a new one!</p>
+{% endif %}
+<hr>
+<h2>Closed Listings</h2>
+{% if closed_list %}
+<div class="closed_list_table">
+    {% for item in closed_list %}
+    <div class="row">
+        <div class="col_img">
+            <img src="{{ item.image }}" alt="Listing item image">
+        </div>
+        <div class="col_title">
+            {{ item.title }}
+        </div>
+        <div class="col_bid">
+            here should be won bid
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+{% else %}
+<p>You don't have any closed listings.</p>
+{% endif %}
+{% endblock %}

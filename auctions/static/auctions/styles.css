@@ -119,3 +119,52 @@ body {
     display: block;
     min-width: none;
 }
+
+.active_list_table{
+    display: table;
+    width: 80%;
+    color: black;
+    border-collapse: collapse;
+}
+
+.row{
+    display: table-row;
+    border-bottom: 2px groove black;
+    vertical-align: middle;
+    height: 30px;
+}
+.col_img{
+    display: table-cell;
+    width: 10%;
+    min-width: none;
+    height: 30px;
+}
+.col_img img{
+    height: inherit;
+}
+.col_title{
+    display: table-cell;
+    width: 50%;
+    min-width: 200px;
+    vertical-align: middle;
+}
+.col_actions{
+    display: table-cell;
+    width: 20%;
+    min-width: none;
+    vertical-align: middle;
+}
+
+.closed_list_table {
+    border-collapse: collapse;
+    display: table;
+    width: 80%;
+    color: gray;
+}
+
+.col_bid{
+    display: table-cell;
+    width: 20%;
+    min-width: none;
+    vertical-align: middle;
+}
