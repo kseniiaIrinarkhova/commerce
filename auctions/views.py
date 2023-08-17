@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.forms import ModelForm
+from .utils import ListingForm, getCategory
 import datetime
 from django.contrib.auth.decorators import login_required
 from .models import User, Listing, Bid, Category
@@ -78,10 +78,7 @@ def listing(request, listing_id):
         "is_editable": is_editable 
     })
 
-class ListingForm(ModelForm):
-    class Meta:
-        model = Listing
-        fields = ['title', 'description', 'price', 'image', 'category', 'auctioneer', 'is_active', 'created_date', 'closed_date']
+
 
 @login_required
 def new_listing(request):
@@ -90,7 +87,11 @@ def new_listing(request):
         form = ListingForm(request.POST)
         print(form)
         if form.is_valid():
-            newListing = form.save()
+            newListing = form.save(commit=False)
+            newListing.auctioneer = User.objects.get(username=request.user.username)
+            newListing.created_date = datetime.datetime.now()
+            newListing.is_active = True
+            newListing.category = getCategory(form.cleaned_data["categoryTitle"])
             newListing.save()
             return HttpResponseRedirect(reverse("listing", args=(newListing.id,)))
         else:
@@ -101,9 +102,6 @@ def new_listing(request):
             "form" : form
             }) 
     form = ListingForm()
-    form.fields["auctioneer"].initial = User.objects.get(username=request.user.username)
-    form.fields["created_date"].initial = datetime.datetime.now()
-    form.fields["is_active"].initial = True
     return render(request, "auctions/editor.html", {
         "title" : "New listing",
         "action" : "new_listing",
@@ -121,27 +119,23 @@ def my_listings(request):
 
 @login_required
 def edit(request, listing_id):
-    print("Edit view")
     listing = Listing.objects.get(pk = listing_id)
-    print(listing)
     if listing is not None:
         if request.method == "POST":
             form = ListingForm(request.POST, instance=listing)
-            print(form)
             if form.is_valid():
-                print("Valid form")
-                form.save()
+                listing = form.save(commit=False)
+                listing.category = getCategory(form.cleaned_data["categoryTitle"])
+                listing.save()
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
             else:
-                print("Not valid form")
                 return render(request, "auctions/editor.html", {
                     "title" : f"{listing.title} - Edit",
                     "listing_id" : listing_id,
                     "action" : "edit",
                     "form" : form
                 }) 
-        print("Get")    
-        form = ListingForm(instance=listing)
+        form = ListingForm(instance=listing, initial={'categoryTitle': listing.category})
         return render(request, "auctions/editor.html", {
             "title" : f"{listing.title} - Edit",
             "listing_id" : listing_id,

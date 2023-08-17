@@ -11,7 +11,8 @@
 {% endif %}
     {% csrf_token %}
     <div class="form">
-       <div class="lable">Listing title: </div>
+       {% comment %}
+        <div class="lable">Listing title: </div>
        <div class="field">{{form.title}}</div> 
     <div class="lable">Detailed description: </div>
     <div class="field">{{form.description}}</div>
@@ -20,14 +21,11 @@
     <div class="lable">URL address for the image of the item:</div>
     <div class="field">{{form.image}}</div>
     <div class="lable">Choose the category: </div>
-    <div class="field">{{form.category}}</div>
+    <div class="field">{{form.categoryTitle}}</div>
     <div class="lable"></div>
+    {% endcomment %}
+    {{form.as_p}}
     <div class="field"><input type="submit"></div>
-    {{form.auctioneer.as_hidden}}
-    {{form.is_active.as_hidden}}
-    {{form.created_date.as_hidden}}
-    {{form.closed_date.as_hidden}}
-    
     </div>
 </form>
 {% endblock %}
