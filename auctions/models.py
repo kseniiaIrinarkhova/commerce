@@ -1,12 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
-class User(AbstractUser):
-    pass
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-
 class Listing(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
@@ -20,7 +14,11 @@ class Listing(models.Model):
 
     def __str__(self):
         return self.title
-
+    
+class User(AbstractUser):
+    wishlist = models.ManyToManyField(Listing, blank=True, related_name='subscribers')    
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 class Bid(models.Model):
     bidder = models.ForeignKey("User", on_delete=models.CASCADE)
