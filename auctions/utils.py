@@ -39,6 +39,8 @@ class ListingForm(ModelForm):
             "description:": "Short Description of lisitng",
             "price": "Price in $",
             "image:": "URL for image"}
-        
+
+def getCategory(categoryTitle):
+    return Category.objects.get(title = categoryTitle)
         
     

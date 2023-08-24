@@ -16,7 +16,7 @@ class Listing(models.Model):
         return self.title
     
 class User(AbstractUser):
-    wishlist = models.ManyToManyField(Listing, blank=True, related_name='subscribers')    
+    watchlist = models.ManyToManyField(Listing, blank=True, related_name='subscribers')    
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
