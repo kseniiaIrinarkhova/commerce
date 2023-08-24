@@ -73,13 +73,30 @@ body {
     display: block;
 }
 
-.prod_title{
+.title_block{
+    width: 100%;
+    margin: 10px;
+    display: flex;
+}
+
+.prod_title{   
+    width: calc(100% - 50px);
     font-family: bluu_nextbold, Crimson Text, serif;
     font-size: 38px;
     font-weight: 600;
     line-height: 45px;
     text-align: center;
+    display: block;
 }
+
+.watchlist_indicator{
+    width: 45px;
+    display: block;
+}
+.watchlist_indicator img {
+    width: 90%;
+}
+
 .prod_hr{
     height: 5px;
     color: #4a2b10;

@@ -19,9 +19,28 @@
             <img src="{{ listing.image }}" alt="Listing item image">
         </div>    
         <div class="product_info">
-            <h1 class="prod_title">
-                {{ listing.title }}
-            </h1>
+            <div class="title_block">
+                <div class="prod_title">
+                    <h1>
+                        {{ listing.title }}
+                    </h1>
+                </div>
+                {% if is_watchable %}
+                <div class="watchlist_indicator">
+                    <form action="{% url 'edit_watchlist' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% load static %}
+                            {% if is_in_watchlist %}
+                                <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
+                            {% else %}
+                                <img src="{% static 'auctions/img/add_watchlist.png' %}" alt="Add to Watchlist">
+                            {% endif%}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
             <hr class="prod_hr" />
             <div class="prod_price">
                 <div class="price">

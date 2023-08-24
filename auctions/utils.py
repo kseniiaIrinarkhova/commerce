@@ -43,4 +43,8 @@ class ListingForm(ModelForm):
 def getCategory(categoryTitle):
     return Category.objects.get(title = categoryTitle)
         
+def getWatchListAction(listing_id, user):
     
+    if user.watchlist.filter(pk = listing_id).exists():
+        return "del_watchlist"   
+    return "add_watchlist"

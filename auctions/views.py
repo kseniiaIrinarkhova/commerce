@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .utils import ListingForm, getCategory
+from .utils import ListingForm, getCategory, getWatchListAction
 import datetime
 from django.contrib.auth.decorators import login_required
 from .models import User, Listing, Bid, Category
@@ -67,15 +67,20 @@ def register(request):
         return render(request, "auctions/register.html")
     
 def listing(request, listing_id):
-    print("Listing view")
     listing = Listing.objects.get(pk = listing_id)
+    is_in_watchlist = is_editable = is_watchable = False
     if request.user.is_authenticated:
-        is_editable =  listing.auctioneer == User.objects.get(username = request.user.username)
-    else:
-        is_editable = False
+        user = User.objects.get(username = request.user.username)
+        is_editable =  listing.auctioneer == user
+        is_watchable = not is_editable
+        if is_watchable:
+            is_in_watchlist = user.watchlist.filter(pk = listing_id).exists()
+
     return render(request, "auctions/listing.html", {
         "listing": listing,
-        "is_editable": is_editable 
+        "is_editable": is_editable,
+        "is_watchable": is_watchable,
+        "is_in_watchlist": is_in_watchlist
     })
 
 
@@ -142,3 +147,13 @@ def edit(request, listing_id):
             "action" : "edit",
             "form" : form
         })
+    
+@login_required
+def edit_watchlist(request, listing_id):
+    user = User.objects.get(username = request.user.username)
+    listing = Listing.objects.get(pk=listing_id)
+    if user.watchlist.filter(pk=listing.id).exists():
+        user.watchlist.remove(listing)
+    else:
+        user.watchlist.add(listing)
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
