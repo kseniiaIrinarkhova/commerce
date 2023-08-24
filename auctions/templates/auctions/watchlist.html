@@ -1,0 +1,52 @@
+{% extends "auctions/layout.html" %}
+{% block title %}
+Watch List
+{% endblock %}
+{% block body %}
+<h2>Active Listings</h2>
+{% if active_list %}
+<div class="active_list_table">
+    {% for item in active_list %}
+    <div class="row">
+        <div class="col_img">
+            <img src="{{ item.image }}" alt="Listing item image">
+        </div>
+        <div class="col_title">
+            {{ item.title }}
+        </div>
+        <div class="col_bid">
+            ${{ item.price}} / $ MY bid
+        </div>
+        <div class="col_actions">
+           {#  <a href="{% url 'add_bid' item.id %}"> #} <a href="#">Add bid</a>
+            <button>Delete from watchlist</button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p> You don't have any active listings in Watch List. Find some interesting item in our auction!</p>
+{% endif %}
+<hr>
+<h2>Closed Listings</h2>
+{% if closed_list %}
+<div class="closed_list_table">
+    {% for item in closed_list %}
+    <div class="row">
+        <div class="col_img">
+            <img src="{{ item.image }}" alt="Listing item image">
+        </div>
+        <div class="col_title">
+            {{ item.title }}
+        </div>
+        <div class="col_bid">
+            shere short note if you won or not
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+{% else %}
+<p>You don't have any closed listings in Watch List yet.</p>
+{% endif %}
+{% endblock %}

@@ -157,3 +157,11 @@ def edit_watchlist(request, listing_id):
     else:
         user.watchlist.add(listing)
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+@login_required
+def my_watchlist(request):
+    user = User.objects.get(username = request.user.username)
+    return render(request,"auctions/watchlist.html", {
+        "active_list": user.watchlist.all().filter(is_active = True),
+        "closed_list": user.watchlist.all().filter(is_active = False) 
+    })
