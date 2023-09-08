@@ -39,6 +39,14 @@ class ListingForm(ModelForm):
             "description:": "Short Description of lisitng",
             "price": "Price in $",
             "image:": "URL for image"}
+        
+class BidForm(ModelForm):
+    class Meta:
+        model = Bid
+        exclude = ['bidder', 'context', 'bid_date']
+        labels = {
+            "price": "Your bid in $"
+        }
 
 def getCategory(categoryTitle):
     return Category.objects.get(title = categoryTitle)
@@ -48,3 +56,12 @@ def getWatchListAction(listing_id, user):
     if user.watchlist.filter(pk = listing_id).exists():
         return "del_watchlist"   
     return "add_watchlist"
+
+
+def checkNewBid(new_bid, listing_id):
+    listing = Listing.objects.get(pk = listing_id)
+    try:
+        max_bid = Bid.objects.filter(context = listing).order_by("id").latest("id")
+        return new_bid > max_bid.price
+    except Bid.DoesNotExist:
+        return new_bid >= listing.price

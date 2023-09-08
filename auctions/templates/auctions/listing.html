@@ -55,14 +55,7 @@
             </div>
         </div>
     </div>
-    <div class="bid_block">
-        <div class="new_bid">
-            <p>Place your bid (form)</p>
-        </div>
-        <div class="bid_stat">
-            <p>Some kind of statistics...</p>
-        </div>
-    </div>
+    
     <div class="details">
         <h3>Delails:</h3>
         <ul>
@@ -76,6 +69,28 @@
                 Created: {{ listing.created_date }}
             </li>
         </ul>
+    </div>
+    <div class="bid_block">
+        <div class="new_bid">
+            {% if user.is_authenticated %}
+            <p>Place your bid (form)</p>
+            <form action="{% url 'place_bid' listing.id %}" method="post">
+                {% csrf_token %}
+                <p>
+                    You would be the first! Place your bid for <b>{{listing.title}}</b>
+                </p>
+                <p>
+                    Num bid(s) so far. Your bid is a current bid.
+                </p>
+                <p>{{ bid_message }}</p>
+                <label for="bid">Yout bid in $:</label>
+                <input type="text" class="number-only" id="bid" name="bid" placeholder="Bid in $">
+                <input type="submit" value="Place a bid">
+            </form>
+            {% else %}
+            <P> You need to be authorized to place a bid! </P>
+            {% endif %}
+        </div>
     </div>
     <div class="comment_block">
         <div class="comment">
