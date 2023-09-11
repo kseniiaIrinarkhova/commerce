@@ -31,6 +31,7 @@
                         {% csrf_token %}
                         <button type="submit">
                             {% load static %}
+                            <input name="wl_flag" type="hidden" value="False">
                             {% if is_in_watchlist %}
                                 <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
                             {% else %}

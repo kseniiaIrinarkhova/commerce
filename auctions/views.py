@@ -156,6 +156,8 @@ def edit_watchlist(request, listing_id):
         user.watchlist.remove(listing)
     else:
         user.watchlist.add(listing)
+    if request.POST["wl_flag"] == "True":
+        return HttpResponseRedirect(reverse("my_watchlist", ))
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
 
 @login_required

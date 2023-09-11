@@ -9,17 +9,27 @@ Watch List
     {% for item in active_list %}
     <div class="row">
         <div class="col_img">
-            <img src="{{ item.image }}" alt="Listing item image">
+            <a href="{% url 'listing' item.id %} ">
+                <img src="{{ item.image }}" alt="Listing item image">
+            </a>
         </div>
         <div class="col_title">
-            {{ item.title }}
+            <a href="{% url 'listing' item.id %} ">
+                {{ item.title }}
+            </a>
         </div>
         <div class="col_bid">
-            ${{ item.price}} / $ MY bid
+            ${{ item.price}}
         </div>
         <div class="col_actions">
-           {#  <a href="{% url 'add_bid' item.id %}"> #} <a href="#">Add bid</a>
-            <button>Delete from watchlist</button>
+            <form action="{% url 'edit_watchlist' item.id %}" method="post">
+                {% csrf_token %}
+                <input name="wl_flag" type="hidden" value="True">
+                <button type="submit">
+                    {% load static %}
+                    <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
+                </button>
+            </form>
         </div>
     </div>
     {% endfor %}
@@ -34,13 +44,26 @@ Watch List
     {% for item in closed_list %}
     <div class="row">
         <div class="col_img">
-            <img src="{{ item.image }}" alt="Listing item image">
+            <a href="{% url 'listing' item.id %} ">
+                <img src="{{ item.image }}" alt="Listing item image">
+            </a>
         </div>
         <div class="col_title">
-            {{ item.title }}
+            <a href="{% url 'listing' item.id %} ">
+                {{ item.title }}
+            </a>
         </div>
         <div class="col_bid">
-            shere short note if you won or not
+        </div>
+        <div class="col_actions">
+            <form action="{% url 'edit_watchlist' item.id %}" method="post">
+                {% csrf_token %}
+                <input name="wl_flag" type="hidden" value="True">
+                <button type="submit">
+                    {% load static %}
+                    <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
+                </button>
+            </form>
         </div>
     </div>
 

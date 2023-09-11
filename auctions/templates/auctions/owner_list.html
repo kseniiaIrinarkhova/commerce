@@ -7,10 +7,10 @@
     {% for item in active_list %}
     <div class="row">
         <div class="col_img">
-            <img src="{{ item.image }}" alt="Listing item image">
+            <a href="{% url 'listing' item.id %} "><img src="{{ item.image }}" alt="Listing item image"></a>
         </div>
         <div class="col_title">
-            {{ item.title }}
+            <a href="{% url 'listing' item.id %} ">{{ item.title }}</a>
         </div>
         <div class="col_bid">
             ${{ item.price}} / $ bid
@@ -19,6 +19,7 @@
             <a href="{% url 'edit' item.id %}">Edit</a>
             <button>Close</button>
         </div>
+
     </div>
     {% endfor %}
 </div>
@@ -32,16 +33,19 @@
     {% for item in closed_list %}
     <div class="row">
         <div class="col_img">
-            <img src="{{ item.image }}" alt="Listing item image">
+            <a href="{% url 'listing' item.id %} ">
+                <img src="{{ item.image }}" alt="Listing item image">
+            </a>
         </div>
         <div class="col_title">
-            {{ item.title }}
+            <a href="{% url 'listing' item.id %} ">
+                {{ item.title }}
+            </a>
         </div>
         <div class="col_bid">
             here should be won bid
         </div>
     </div>
-
     {% endfor %}
 </div>
 {% else %}

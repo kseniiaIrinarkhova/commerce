@@ -152,24 +152,27 @@ body {
 }
 .col_img{
     display: table-cell;
-    width: 10%;
+    width: 50px;
     min-width: none;
     height: 30px;
 }
-.col_img img{
-    height: inherit;
+.col_img a img{
+    height: 30px;
 }
 .col_title{
     display: table-cell;
-    width: 50%;
+    width: calc(100% - 300px);
     min-width: 200px;
     vertical-align: middle;
 }
 .col_actions{
     display: table-cell;
-    width: 20%;
+    width: 100px;
     min-width: none;
     vertical-align: middle;
+}
+.col_actions img{
+    width: 30px
 }
 
 .closed_list_table {
@@ -181,7 +184,7 @@ body {
 
 .col_bid{
     display: table-cell;
-    width: 20%;
+    width: 150px;
     min-width: none;
     vertical-align: middle;
 }
