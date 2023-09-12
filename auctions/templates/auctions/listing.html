@@ -10,95 +10,129 @@
 {% endif %}
 {%endblock%}
 {% block body %}
-    <div class="breadcrumbs">
-        <a href="{% url 'index' %}">Home</a> >> <a href = "{% url 'listing' listing.id %}">{{ listing.title }}</a>
+<div class="breadcrumbs">
+    <a href="{% url 'index' %}">Home</a> >> <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a>
+</div>
+<hr class="breadcrumbs_hr" />
+<div class="product">
+    <div class="product_image">
+        <img src="{{ listing.image }}" alt="Listing item image">
     </div>
-    <hr class="breadcrumbs_hr" />
-    <div class="product">
-        <div class="product_image">
-            <img src="{{ listing.image }}" alt="Listing item image">
-        </div>    
-        <div class="product_info">
-            <div class="title_block">
-                <div class="prod_title">
-                    <h1>
-                        {{ listing.title }}
-                    </h1>
-                </div>
-                {% if is_watchable %}
-                <div class="watchlist_indicator">
-                    <form action="{% url 'edit_watchlist' listing.id %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit">
-                            {% load static %}
-                            {% if is_in_watchlist %}
-                                <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
-                            {% else %}
-                                <img src="{% static 'auctions/img/add_watchlist.png' %}" alt="Add to Watchlist">
-                            {% endif%}
-                        </button>
-                    </form>
-                </div>
-                {% endif %}
+    <div class="product_info">
+        <div class="title_block">
+            <div class="prod_title">
+                <h1>
+                    {{ listing.title }}
+                </h1>
             </div>
-            <hr class="prod_hr" />
-            <div class="prod_price">
-                <div class="price">
-                    <span class="price_text">
-                        ${{ listing.price }}
-                    </span>
-                </div>
+            {% if is_watchable %}
+            <div class="watchlist_indicator">
+                <form action="{% url 'edit_watchlist' listing.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">
+                        {% load static %}
+                        {% if is_in_watchlist %}
+                        <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
+                        {% else %}
+                        <img src="{% static 'auctions/img/add_watchlist.png' %}" alt="Add to Watchlist">
+                        {% endif%}
+                    </button>
+                </form>
             </div>
-            <hr class="prod_hr" />
-            <div class="prod_description">
-                <p>{{ listing.description }}</p>
+            {% endif %}
+        </div>
+        <hr class="prod_hr" />
+        <div class="prod_price">
+            <div class="price">
+                <span class="price_text">
+                    ${{ listing.price }}
+                </span>
             </div>
         </div>
+        <hr class="prod_hr" />
+        <div class="prod_description">
+            <p>{{ listing.description }}</p>
+        </div>
     </div>
-    
-    <div class="details">
-        <h3>Delails:</h3>
-        <ul>
-            <li>
-                Listed by: {{ listing.auctioneer }}
-            </li>
-            <li> 
-                Category: {{ listing.category }}
-            </li>
-            <li>
-                Created: {{ listing.created_date }}
-            </li>
-        </ul>
-    </div>
-    <div class="bid_block">
+</div>
+<hr class="product_hr" />
+<div class="details">
+    <h3>Delails:</h3>
+    <ul>
+        <li>
+            Listed by: {{ listing.auctioneer }}
+        </li>
+        <li>
+            Category: {{ listing.category }}
+        </li>
+        <li>
+            Created: {{ listing.created_date }}
+        </li>
+    </ul>
+</div>
+<hr class="product_hr" />
+<div class="bid_block">
+    {% if user.is_authenticated %}
+        {% if listing.is_active %}
+        {%if is_editable %}
+        <div class="owner_bid">
+            {% if bid_info.max_bid > 0 %}
+            <p>Current bid is <b>${{ bid_info.max_bid }}</b></p>
+            {% else %}
+            <p>There is no bids for this item currently.</p>
+            {% endif %}
+            <a href="{% url 'close_auction' listing.id %}">Close the auction! </a>
+        </div>
+        {% else %}
         <div class="new_bid">
-            {% if user.is_authenticated %}
-            <p>Place your bid (form)</p>
             <form action="{% url 'place_bid' listing.id %}" method="post">
                 {% csrf_token %}
+                {% if bid_info.max_bid == 0 %}
                 <p>
                     You would be the first! Place your bid for <b>{{listing.title}}</b>
                 </p>
+                {% else %}
                 <p>
-                    Num bid(s) so far. Your bid is a current bid.
+                    {{bid_info.count}} bid(s) so far. 
+                    {% if bid_info.user_bid %}
+                    Your bid is a current bid.
+                    {% endif %}
                 </p>
+                {% endif %}
                 <p>{{ bid_message }}</p>
                 <label for="bid">Yout bid in $:</label>
                 <input type="text" class="number-only" id="bid" name="bid" placeholder="Bid in $">
                 <input type="submit" value="Place a bid">
             </form>
+        </div>
+        {% endif %}
+        {% else %}
+            {%if is_editable %}
+            <div class="owner_bid">
+                <p>You close the auction. Winning bid is <b>${{bid_info.max_bid}}.</b></p>
+            </div>
             {% else %}
-            <P> You need to be authorized to place a bid! </P>
+            <div class="new_bid">
+                <p>Auction is closed.</p>
+                
+                {% if bid_info.user_bid %}
+                <h3>Congradulation! You won the auction!</h3>
+                {% endif %}
+            </div>
             {% endif %}
-        </div>
+        {% endif%}
+    {% else %}
+    <P> You need to be authorized to place a bid! </P>
+    {% endif %}
+</div>
+<hr class="product_hr" />
+<div class="comment_block">
+    <div class="comment">
+        <div class="comment_text"></div>
+        <div class="comment_reaction"></div>
     </div>
-    <div class="comment_block">
-        <div class="comment">
-            <div class="comment_text"></div>
-            <div class="comment_reaction"></div>
-        </div>
-        <div class="comment_form">
-            <p>There should be a form for a new comment</p>
-        </div>
+    <div class="comment_form">
+        <p>There should be a form for a new comment</p>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}

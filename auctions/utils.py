@@ -65,3 +65,5 @@ def checkNewBid(new_bid, listing_id):
         return new_bid > max_bid.price
     except Bid.DoesNotExist:
         return new_bid >= listing.price
+    
+    
