@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .utils import ListingForm, getCategory, getWatchListAction
+from .utils import ListingForm, getCategory, checkNewBid
 import datetime
 from django.contrib.auth.decorators import login_required
 from .models import User, Listing, Bid, Category
@@ -75,12 +75,19 @@ def listing(request, listing_id):
         is_watchable = not is_editable
         if is_watchable:
             is_in_watchlist = user.watchlist.filter(pk = listing_id).exists()
+        bid_info = {'count': 0, 'max_bid': 0, 'user_bid': False}
+        if Bid.objects.all().filter(context = listing).exists():
+            bid_info['count'] = Bid.objects.all().filter(context = listing).count()
+            bid_info['max_bid'] = Bid.objects.all().filter(context = listing).last().price
+            bid_info['user_bid'] = user == Bid.objects.all().filter(context = listing).last().bidder
 
     return render(request, "auctions/listing.html", {
         "listing": listing,
         "is_editable": is_editable,
         "is_watchable": is_watchable,
-        "is_in_watchlist": is_in_watchlist
+        "is_in_watchlist": is_in_watchlist,
+        "bid_message": "",
+        "bid_info" : bid_info
     })
 
 
@@ -167,3 +174,68 @@ def my_watchlist(request):
         "active_list": user.watchlist.all().filter(is_active = True),
         "closed_list": user.watchlist.all().filter(is_active = False) 
     })
+
+@login_required
+def place_bid(request, listing_id):
+    listing = Listing.objects.get(pk = listing_id)
+    user = User.objects.get(username = request.user.username)
+    is_in_watchlist = is_editable = is_watchable = False
+    is_editable =  listing.auctioneer == user
+    is_watchable = not is_editable
+    if is_watchable:
+        is_in_watchlist = user.watchlist.filter(pk = listing_id).exists()
+    if listing is not None:
+        if request.method == "POST":
+
+            bid_info = {'count': 0, 'max_bid': 0, 'user_bid': False}
+            if Bid.objects.all().filter(context = listing).exists():
+                bid_info['count'] = Bid.objects.all().filter(context = listing).count()
+                bid_info['max_bid'] = Bid.objects.all().filter(context = listing).last().price
+                bid_info['user_bid'] = user == Bid.objects.all().filter(context = listing).last().bidder 
+            try:
+                new_bid = float(request.POST['bid'])
+                if new_bid != "" :
+                    if checkNewBid(new_bid, listing_id):
+                        newBid = Bid()
+                        newBid.bidder = user
+                        newBid.context = listing
+                        newBid.price = new_bid
+                        newBid.bid_date = datetime.datetime.now()
+                        newBid.save()
+                        bid_info['count'] += 1
+                        bid_info['max_bid'] = new_bid
+                        bid_info['user_bid'] = True
+                    else:
+                        return render(request, "auctions/listing.html", {
+                            "listing": listing,
+                            "is_editable": is_editable,
+                            "is_watchable": is_watchable,
+                            "is_in_watchlist": is_in_watchlist,
+                            "bid_message": f"Your bid ${new_bid} is too low!",
+                            "bid_info": bid_info
+                        })
+            except ValueError:
+                return render(request, "auctions/listing.html", {
+                            "listing": listing,
+                            "is_editable": is_editable,
+                            "is_watchable": is_watchable,
+                            "is_in_watchlist": is_in_watchlist,
+                            "bid_message": "Bid should be a decimal number!",
+                            "bid_info": bid_info
+                        })
+
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+@login_required
+def close_auction(request, listing_id):
+    listing = Listing.objects.get(pk = listing_id)
+    user = User.objects.get(username = request.user.username)
+    if user == listing.auctioneer:
+        listing.is_active = False
+        listing.closed_date = datetime.datetime.now()
+        listing.save()
+        if Bid.objects.all().filter(context = listing).exists():
+            won_bid = Bid.objects.all().filter(context = listing).last()
+            won_bid.is_won = True
+            won_bid.save()
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
