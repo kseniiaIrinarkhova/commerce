@@ -30,6 +30,10 @@ class Bid(models.Model):
     def __str__(self):
         return f"{self.bidder}: ${self.price}"
 
+class CommentManager(models.Manager):
+    def create_comment(self, context, author, text):
+        comment = self.create(context = context, author = author, text = text)
+        return comment
 
 class Comment(models.Model):
     context = models.ForeignKey("Listing", on_delete=models.CASCADE)
@@ -38,6 +42,8 @@ class Comment(models.Model):
     like = models.IntegerField(default=0)
     dislike = models.IntegerField(default=0)
 
+    objects = CommentManager()
+
 
 class Category(models.Model):
     title = models.CharField(max_length=50)
@@ -45,3 +51,4 @@ class Category(models.Model):
     def __str__(self):
         return self.title
     
+

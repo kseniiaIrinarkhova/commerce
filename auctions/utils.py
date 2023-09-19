@@ -4,7 +4,7 @@ from django.core.files.base import File
 from django.db.models.base import Model
 from django.forms import ModelForm
 from django.forms.utils import ErrorList
-from .models import User, Listing, Bid, Category
+from .models import User, Listing, Bid, Category, Comment
 
 class ListTextWidget(forms.TextInput):
     def __init__(self, data_list, name, *args, **kwargs):
@@ -47,6 +47,7 @@ class BidForm(ModelForm):
         labels = {
             "price": "Your bid in $"
         }
+
 
 def getCategory(categoryTitle):
     return Category.objects.get(title = categoryTitle)

@@ -6,7 +6,7 @@ from django.urls import reverse
 from .utils import ListingForm, getCategory, checkNewBid
 import datetime
 from django.contrib.auth.decorators import login_required
-from .models import User, Listing, Bid, Category
+from .models import User, Listing, Bid, Category, Comment
 
 
 def index(request):
@@ -87,7 +87,8 @@ def listing(request, listing_id):
         "is_watchable": is_watchable,
         "is_in_watchlist": is_in_watchlist,
         "bid_message": "",
-        "bid_info" : bid_info
+        "bid_info" : bid_info,
+        "comments" : Comment.objects.all().filter(context = listing)
     })
 
 
@@ -95,9 +96,7 @@ def listing(request, listing_id):
 @login_required
 def new_listing(request):
     if request.method == "POST":
-        print(request)
         form = ListingForm(request.POST)
-        print(form)
         if form.is_valid():
             newListing = form.save(commit=False)
             newListing.auctioneer = User.objects.get(username=request.user.username)
@@ -212,7 +211,8 @@ def place_bid(request, listing_id):
                             "is_watchable": is_watchable,
                             "is_in_watchlist": is_in_watchlist,
                             "bid_message": f"Your bid ${new_bid} is too low!",
-                            "bid_info": bid_info
+                            "bid_info": bid_info,
+                            "comments" : Comment.objects.all().filter(context = listing)
                         })
             except ValueError:
                 return render(request, "auctions/listing.html", {
@@ -221,7 +221,8 @@ def place_bid(request, listing_id):
                             "is_watchable": is_watchable,
                             "is_in_watchlist": is_in_watchlist,
                             "bid_message": "Bid should be a decimal number!",
-                            "bid_info": bid_info
+                            "bid_info": bid_info,
+                            "comments" : Comment.objects.all().filter(context = listing)
                         })
 
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
@@ -238,4 +239,17 @@ def close_auction(request, listing_id):
             won_bid = Bid.objects.all().filter(context = listing).last()
             won_bid.is_won = True
             won_bid.save()
+    return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+
+@login_required
+def add_comment(request, listing_id):
+    listing = Listing.objects.get(pk = listing_id)
+    user = User.objects.get(username = request.user.username)
+    if request.method == "POST" and listing is not None:
+        comment = request.POST['comment']
+        if comment != "" :
+            newComment = Comment.objects.create_comment(listing, user, comment)
+            newComment.save()
+            return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
+        
     return HttpResponseRedirect(reverse("listing", args=(listing_id,)))

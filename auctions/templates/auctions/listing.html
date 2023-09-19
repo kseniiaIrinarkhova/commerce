@@ -31,7 +31,7 @@
                     {% csrf_token %}
                     <button type="submit">
                         {% load static %}
-                            <input name="wl_flag" type="hidden" value="False">
+                        <input name="wl_flag" type="hidden" value="False">
                         {% if is_in_watchlist %}
                         <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
                         {% else %}
@@ -74,66 +74,78 @@
 <hr class="product_hr" />
 <div class="bid_block">
     {% if user.is_authenticated %}
-        {% if listing.is_active %}
-        {%if is_editable %}
-        <div class="owner_bid">
-            {% if bid_info.max_bid > 0 %}
-            <p>Current bid is <b>${{ bid_info.max_bid }}</b></p>
-            {% else %}
-            <p>There is no bids for this item currently.</p>
-            {% endif %}
-            <a href="{% url 'close_auction' listing.id %}">Close the auction! </a>
-        </div>
+    {% if listing.is_active %}
+    {%if is_editable %}
+    <div class="owner_bid">
+        {% if bid_info.max_bid > 0 %}
+        <p>Current bid is <b>${{ bid_info.max_bid }}</b></p>
         {% else %}
-        <div class="new_bid">
-            <form action="{% url 'place_bid' listing.id %}" method="post">
-                {% csrf_token %}
-                {% if bid_info.max_bid == 0 %}
-                <p>
-                    You would be the first! Place your bid for <b>{{listing.title}}</b>
-                </p>
-                {% else %}
-                <p>
-                    {{bid_info.count}} bid(s) so far. 
-                    {% if bid_info.user_bid %}
-                    Your bid is a current bid.
-                    {% endif %}
-                </p>
-                {% endif %}
-                <p>{{ bid_message }}</p>
-                <label for="bid">Yout bid in $:</label>
-                <input type="text" class="number-only" id="bid" name="bid" placeholder="Bid in $">
-                <input type="submit" value="Place a bid">
-            </form>
-        </div>
+        <p>There is no bids for this item currently.</p>
         {% endif %}
-        {% else %}
-            {%if is_editable %}
-            <div class="owner_bid">
-                <p>You close the auction. Winning bid is <b>${{bid_info.max_bid}}.</b></p>
-            </div>
+        <a href="{% url 'close_auction' listing.id %}">Close the auction! </a>
+    </div>
+    {% else %}
+    <div class="new_bid">
+        <form action="{% url 'place_bid' listing.id %}" method="post">
+            {% csrf_token %}
+            {% if bid_info.max_bid == 0 %}
+            <p>
+                You would be the first! Place your bid for <b>{{listing.title}}</b>
+            </p>
             {% else %}
-            <div class="new_bid">
-                <p>Auction is closed.</p>
-                
+            <p>
+                {{bid_info.count}} bid(s) so far.
                 {% if bid_info.user_bid %}
-                <h3>Congradulation! You won the auction!</h3>
+                Your bid is a current bid.
                 {% endif %}
-            </div>
+            </p>
             {% endif %}
-        {% endif%}
+            <p>{{ bid_message }}</p>
+            <label for="bid">Yout bid in $:</label>
+            <input type="text" class="number-only" id="bid" name="bid" placeholder="Bid in $">
+            <input type="submit" value="Place a bid">
+        </form>
+    </div>
+    {% endif %}
+    {% else %}
+    {%if is_editable %}
+    <div class="owner_bid">
+        <p>You close the auction. Winning bid is <b>${{bid_info.max_bid}}.</b></p>
+    </div>
+    {% else %}
+    <div class="new_bid">
+        <p>Auction is closed.</p>
+
+        {% if bid_info.user_bid %}
+        <h3>Congradulation! You won the auction!</h3>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% endif%}
     {% else %}
     <P> You need to be authorized to place a bid! </P>
     {% endif %}
 </div>
 <hr class="product_hr" />
 <div class="comment_block">
+    {% for comment in comments %}
     <div class="comment">
-        <div class="comment_text"></div>
-        <div class="comment_reaction"></div>
+        <div class="comment_author"> {{comment.author}}</div>
+        <div class="comment_text"> {{comment.text}}</div>
+        <div class="comment_reaction">
+            like({{comment.like}})/dislike({{comment.dislike}})
+        </div>
     </div>
+    {% endfor %}
+    {% if user.is_authenticated %}
     <div class="comment_form">
-        <p>There should be a form for a new comment</p>
+        <form action="{% url 'add_comment' listing.id %}" method="post">
+            {% csrf_token %}
+            <label for="comment">Add new comment:</label>
+            <textarea class="comment_text" id="comment" name="comment" placeholder="Text your comment" rows="3"></textarea>
+                <div class="field"><input type="submit"></div>
+        </form>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
