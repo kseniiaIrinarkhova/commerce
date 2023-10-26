@@ -1,6 +1,19 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+        
+class OwnerListManager(models.Manager): 
+    def getActiveListings(self,user):
+        list = self.filter(auctioneer = user, is_active = True)
+        for item in list:
+            item.check_user_related_data(user)  
+        return list
+    def getClosedListings(self,user):
+        list = self.filter(auctioneer = user, is_active = False)
+        for item in list:
+            item.check_user_related_data(user)      
+        return list
+
 class Listing(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
@@ -12,8 +25,54 @@ class Listing(models.Model):
     created_date = models.DateTimeField()
     closed_date = models.DateTimeField(blank=True, null=True)
 
+    
+
     def __str__(self):
         return self.title
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._is_watchable = False
+        self._is_editable = False
+        self._is_in_watchlist = False
+        self._bid_info = {'count': 0, 'max_bid': 0, 'user_bid': False}
+        
+        
+    
+   
+    def check_user_related_data(self, user):
+        if user is not None:
+            if self.auctioneer != user:
+                self._is_watchable = True
+                self._is_in_watchlist = user.watchlist.filter(pk = self.id).exists()
+            else:
+                self._is_editable = True
+            if Bid.objects.all().filter(context = self).exists():
+                self._bid_info['count'] = Bid.objects.all().filter(context = self).count()
+                self._bid_info['max_bid'] = Bid.objects.all().filter(context = self).last().price
+                self._bid_info['user_bid'] = user == Bid.objects.all().filter(context = self).last().bidder
+        else:
+            self._is_editable = False
+
+    @property
+    def is_watchable(self):
+        return self._is_watchable
+    
+    @property
+    def is_editable(self):
+        return self._is_editable
+    
+    @property
+    def is_in_watchlist(self):
+        return self._is_in_watchlist
+    
+    @property
+    def bid_info(self):
+        return self._bid_info
+    
+    objects = models.Manager()
+    ownerList = OwnerListManager()
+        
     
 class User(AbstractUser):
     watchlist = models.ManyToManyField(Listing, blank=True, related_name='subscribers')    
@@ -39,8 +98,6 @@ class Comment(models.Model):
     context = models.ForeignKey("Listing", on_delete=models.CASCADE)
     author = models.ForeignKey("User", on_delete=models.CASCADE)
     text = models.TextField()
-    like = models.IntegerField(default=0)
-    dislike = models.IntegerField(default=0)
 
     objects = CommentManager()
 

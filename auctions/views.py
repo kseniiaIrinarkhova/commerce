@@ -68,26 +68,14 @@ def register(request):
     
 def listing(request, listing_id):
     listing = Listing.objects.get(pk = listing_id)
-    is_in_watchlist = is_editable = is_watchable = False
     if request.user.is_authenticated:
         user = User.objects.get(username = request.user.username)
-        is_editable =  listing.auctioneer == user
-        is_watchable = not is_editable
-        if is_watchable:
-            is_in_watchlist = user.watchlist.filter(pk = listing_id).exists()
-        bid_info = {'count': 0, 'max_bid': 0, 'user_bid': False}
-        if Bid.objects.all().filter(context = listing).exists():
-            bid_info['count'] = Bid.objects.all().filter(context = listing).count()
-            bid_info['max_bid'] = Bid.objects.all().filter(context = listing).last().price
-            bid_info['user_bid'] = user == Bid.objects.all().filter(context = listing).last().bidder
-
+        listing.check_user_related_data(user)  
+    else:
+        listing.check_user_related_data(None)       
     return render(request, "auctions/listing.html", {
-        "listing": listing,
-        "is_editable": is_editable,
-        "is_watchable": is_watchable,
-        "is_in_watchlist": is_in_watchlist,
+        "listing": listing,        
         "bid_message": "",
-        "bid_info" : bid_info,
         "comments" : Comment.objects.all().filter(context = listing)
     })
 
@@ -124,8 +112,8 @@ def new_listing(request):
 def my_listings(request):
     user = User.objects.get(username = request.user.username)
     return render(request,"auctions/owner_list.html", {
-        "active_list": Listing.objects.filter(auctioneer = user, is_active = True),
-        "closed_list": Listing.objects.filter(auctioneer = user, is_active = False) 
+        "active_list": Listing.ownerList.getActiveListings(user),
+        "closed_list": Listing.ownerList.getClosedListings(user),
     })
 
 @login_required
@@ -178,19 +166,9 @@ def my_watchlist(request):
 def place_bid(request, listing_id):
     listing = Listing.objects.get(pk = listing_id)
     user = User.objects.get(username = request.user.username)
-    is_in_watchlist = is_editable = is_watchable = False
-    is_editable =  listing.auctioneer == user
-    is_watchable = not is_editable
-    if is_watchable:
-        is_in_watchlist = user.watchlist.filter(pk = listing_id).exists()
     if listing is not None:
+        listing.check_user_related_data(user)
         if request.method == "POST":
-
-            bid_info = {'count': 0, 'max_bid': 0, 'user_bid': False}
-            if Bid.objects.all().filter(context = listing).exists():
-                bid_info['count'] = Bid.objects.all().filter(context = listing).count()
-                bid_info['max_bid'] = Bid.objects.all().filter(context = listing).last().price
-                bid_info['user_bid'] = user == Bid.objects.all().filter(context = listing).last().bidder 
             try:
                 new_bid = float(request.POST['bid'])
                 if new_bid != "" :
@@ -201,27 +179,16 @@ def place_bid(request, listing_id):
                         newBid.price = new_bid
                         newBid.bid_date = datetime.datetime.now()
                         newBid.save()
-                        bid_info['count'] += 1
-                        bid_info['max_bid'] = new_bid
-                        bid_info['user_bid'] = True
                     else:
                         return render(request, "auctions/listing.html", {
                             "listing": listing,
-                            "is_editable": is_editable,
-                            "is_watchable": is_watchable,
-                            "is_in_watchlist": is_in_watchlist,
                             "bid_message": f"Your bid ${new_bid} is too low!",
-                            "bid_info": bid_info,
                             "comments" : Comment.objects.all().filter(context = listing)
                         })
             except ValueError:
                 return render(request, "auctions/listing.html", {
-                            "listing": listing,
-                            "is_editable": is_editable,
-                            "is_watchable": is_watchable,
-                            "is_in_watchlist": is_in_watchlist,
-                            "bid_message": "Bid should be a decimal number!",
-                            "bid_info": bid_info,
+                            "listing": listing,                           
+                            "bid_message": "Bid should be a decimal number!",                          
                             "comments" : Comment.objects.all().filter(context = listing)
                         })
 

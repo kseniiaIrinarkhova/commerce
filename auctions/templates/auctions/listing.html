@@ -25,14 +25,14 @@
                     {{ listing.title }}
                 </h1>
             </div>
-            {% if is_watchable %}
+            {% if listing.is_watchable %}
             <div class="watchlist_indicator">
                 <form action="{% url 'edit_watchlist' listing.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit">
                         {% load static %}
                         <input name="wl_flag" type="hidden" value="False">
-                        {% if is_in_watchlist %}
+                        {% if listing.is_in_watchlist %}
                         <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
                         {% else %}
                         <img src="{% static 'auctions/img/add_watchlist.png' %}" alt="Add to Watchlist">
@@ -75,10 +75,10 @@
 <div class="bid_block">
     {% if user.is_authenticated %}
     {% if listing.is_active %}
-    {%if is_editable %}
+    {%if listing.is_editable %}
     <div class="owner_bid">
-        {% if bid_info.max_bid > 0 %}
-        <p>Current bid is <b>${{ bid_info.max_bid }}</b></p>
+        {% if listing.bid_info.max_bid > 0 %}
+        <p>Current bid is <b>${{ listing.bid_info.max_bid }}</b></p>
         {% else %}
         <p>There is no bids for this item currently.</p>
         {% endif %}
@@ -88,14 +88,14 @@
     <div class="new_bid">
         <form action="{% url 'place_bid' listing.id %}" method="post">
             {% csrf_token %}
-            {% if bid_info.max_bid == 0 %}
+            {% if listing.bid_info.max_bid == 0 %}
             <p>
                 You would be the first! Place your bid for <b>{{listing.title}}</b>
             </p>
             {% else %}
             <p>
-                {{bid_info.count}} bid(s) so far.
-                {% if bid_info.user_bid %}
+                {{listing.bid_info.count}} bid(s) so far.
+                {% if listing.bid_info.user_bid %}
                 Your bid is a current bid.
                 {% endif %}
             </p>
@@ -108,15 +108,15 @@
     </div>
     {% endif %}
     {% else %}
-    {%if is_editable %}
+    {%if listing.is_editable %}
     <div class="owner_bid">
-        <p>You close the auction. Winning bid is <b>${{bid_info.max_bid}}.</b></p>
+        <p>You close the auction. Winning bid is <b>${{listing.bid_info.max_bid}}.</b></p>
     </div>
     {% else %}
     <div class="new_bid">
         <p>Auction is closed.</p>
 
-        {% if bid_info.user_bid %}
+        {% if listing.bid_info.user_bid %}
         <h3>Congradulation! You won the auction!</h3>
         {% endif %}
     </div>
@@ -132,9 +132,6 @@
     <div class="comment">
         <div class="comment_author"> {{comment.author}}</div>
         <div class="comment_text"> {{comment.text}}</div>
-        <div class="comment_reaction">
-            like({{comment.like}})/dislike({{comment.dislike}})
-        </div>
     </div>
     {% endfor %}
     {% if user.is_authenticated %}

@@ -13,7 +13,7 @@
             <a href="{% url 'listing' item.id %} ">{{ item.title }}</a>
         </div>
         <div class="col_bid">
-            ${{ item.price}} / $ bid
+            ${{ item.price}}/ ${{item.bid_info.max_bid}} is a max bid
         </div>
         <div class="col_actions">
             <a href="{% url 'edit' item.id %}">Edit</a>
@@ -43,7 +43,7 @@
             </a>
         </div>
         <div class="col_bid">
-            here should be won bid
+            $ {{ item.bid_info.max_bid}} 
         </div>
     </div>
     {% endfor %}
