@@ -136,7 +136,7 @@ def edit(request, listing_id):
                 }) 
         form = ListingForm(instance=listing, initial={'categoryTitle': listing.category})
         return render(request, "auctions/editor.html", {
-            "title" : f"{listing.title} - Edit",
+            "title" : listing.title,
             "listing_id" : listing_id,
             "action" : "edit",
             "form" : form

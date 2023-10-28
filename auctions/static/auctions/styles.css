@@ -1,193 +1,24 @@
-body {
-    padding: 10px;
-    min-width: 600px;
+.figure{
+    height: 45vh;
 }
 
-.collection {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.item {
-    width: 33%;
-    min-width: 300px;
-    justify-content: center;
-    display: flex;
-    background-color: ivory;
-    text-align: center;
-}
-.item a{
-    text-align: center;
-    width: 80%;
-}
-.grid_frame{
-    padding: 10px;
-    position: relative;
-}
-
-.grid_image{
-    background-color: #f4e9d3;
-    height: 290px;
-    border-radius: 10px;
-    justify-content: center;
-    display: flex;
-    position: relative;
-    overflow: hidden;
-}
-
-.grid_title{
-    margin: 18px 0 13px;
-    color: #4a2b10;
-    font-family: bluu_nextbold, Crimson Text, serif;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 30px;
-}
-
-.grid_price{
-    font-size: 21px;
-    font-style: oblique;
-    font-weight: 600;
-    line-height: 30px;
-    display: block;
-    position: relative;
-}
-
-.product{
-    width: 100%;
-    margin: 10px;
-    display: flex;
-}
-
-.product_image{
-    width: calc(35% - 5px);
-    max-width: 500px;
-    min-width: 150px;
-    display: block;
-    background-color: #4a2b10;
-}
-.product_image img{
+.figure img {
     width: 90%;
 }
 
-.product_info{
-    width: calc(65% - 5px);
-    display: block;
+.table_cell_image{
+    width: 8vh;
 }
 
-.title_block{
+.table_cell_image img{
     width: 100%;
-    margin: 10px;
-    display: flex;
+    object-fit: cover;
 }
 
-.prod_title{   
-    width: calc(100% - 50px);
-    font-family: bluu_nextbold, Crimson Text, serif;
-    font-size: 38px;
-    font-weight: 600;
-    line-height: 45px;
-    text-align: center;
-    display: block;
+.watchlist_btn{
+    width: 7vh;
 }
 
-.watchlist_indicator{
-    width: 45px;
-    display: block;
-}
-.watchlist_indicator img {
-    width: 90%;
-}
-
-.prod_hr{
-    height: 5px;
-    color: #4a2b10;
-    margin: 20px 0;
-}
-.prod_price{
-    justify-content: space-between;
-    padding-bottom: 10px;
-    font-size: 51px;
-    font-weight: 600;
-    line-height: 50px;
-    display: flex;
-}
-
-.price{
-    align-items: flex-start;
-    display: flex;
-}
-
-.prod_description{
-    text-align: left;
-    padding-left: 10px;
-    position: relative;
-    overflow: hidden;
-}
-
-.bid_block{
-    display: flex;
-}
-.new_bid{
-    width: calc(35% - 5px);
-    display: block;
-    min-width: 300px;
-}
-.bid_stat{
-    width: calc(65% - 5px);
-    display: block;
-    min-width: none;
-}
-
-.active_list_table{
-    display: table;
-    width: 80%;
-    color: black;
-    border-collapse: collapse;
-}
-
-.row{
-    display: table-row;
-    border-bottom: 2px groove black;
-    vertical-align: middle;
-    height: 30px;
-}
-.col_img{
-    display: table-cell;
-    width: 50px;
-    min-width: none;
-    height: 30px;
-}
-.col_img a img{
-    height: 30px;
-}
-.col_title{
-    display: table-cell;
-    width: calc(100% - 300px);
-    min-width: 200px;
-    vertical-align: middle;
-}
-.col_actions{
-    display: table-cell;
-    width: 100px;
-    min-width: none;
-    vertical-align: middle;
-}
-.col_actions img{
-    width: 30px
-}
-
-.closed_list_table {
-    border-collapse: collapse;
-    display: table;
-    width: 80%;
-    color: gray;
-}
-
-.col_bid{
-    display: table-cell;
-    width: 150px;
-    min-width: none;
-    vertical-align: middle;
+.watchlist_btn img{
+    width: 100%;
 }

@@ -5,13 +5,14 @@ from django.db.models.base import Model
 from django.forms import ModelForm
 from django.forms.utils import ErrorList
 from .models import User, Listing, Bid, Category, Comment
+from django.utils.html import format_html, html_safe
 
 class ListTextWidget(forms.TextInput):
     def __init__(self, data_list, name, *args, **kwargs):
         super(ListTextWidget, self).__init__(*args, **kwargs)
         self._name = name
         self._list = data_list
-        self.attrs.update({'list':'list__%s' % self._name})
+        self.attrs.update({'list':'list__%s' % self._name, 'class': 'form-control'})
 
     def render(self, name, value, attrs=None, renderer=None):
         text_html = super(ListTextWidget, self).render(name, value, attrs=attrs)
@@ -20,7 +21,7 @@ class ListTextWidget(forms.TextInput):
             data_list += '<option value="%s">' % str(item).title()
         data_list += '</datalist>'
 
-        return (text_html + data_list)
+        return format_html(text_html + data_list)
     
 class ListingForm(ModelForm):
     categoryTitle = forms.CharField(label="Category")                
@@ -28,8 +29,7 @@ class ListingForm(ModelForm):
         super(ListingForm, self).__init__(*args, **kwargs)
         self.fields["categoryTitle"].widget = ListTextWidget(
             data_list=Category.objects.all(), 
-            name='category_list',
-            attrs={'autocomplete': 'off'})
+            name='category_list')
 
     class Meta:
         model = Listing

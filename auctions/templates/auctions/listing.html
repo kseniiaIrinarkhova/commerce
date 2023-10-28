@@ -3,75 +3,76 @@
 {{listing.title}}
 {% endblock %}
 {% block navigation %}
-{%if is_editable %}
-<li>
+{%if listing.is_editable %}
+<li class="nav-item">
     <a class="nav-link" href="{% url 'edit' listing.id %}">Edit</a>
 </li>
 {% endif %}
 {%endblock%}
 {% block body %}
-<div class="breadcrumbs">
-    <a href="{% url 'index' %}">Home</a> >> <a href="{% url 'listing' listing.id %}">{{ listing.title }}</a>
-</div>
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ listing.title }}</li>
+    </ol>
+</nav>
 <hr class="breadcrumbs_hr" />
-<div class="product">
-    <div class="product_image">
-        <img src="{{ listing.image }}" alt="Listing item image">
-    </div>
-    <div class="product_info">
-        <div class="title_block">
-            <div class="prod_title">
-                <h1>
-                    {{ listing.title }}
-                </h1>
-            </div>
-            {% if listing.is_watchable %}
-            <div class="watchlist_indicator">
-                <form action="{% url 'edit_watchlist' listing.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit">
-                        {% load static %}
-                        <input name="wl_flag" type="hidden" value="False">
-                        {% if listing.is_in_watchlist %}
-                        <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
-                        {% else %}
-                        <img src="{% static 'auctions/img/add_watchlist.png' %}" alt="Add to Watchlist">
-                        {% endif%}
-                    </button>
-                </form>
-            </div>
-            {% endif %}
+
+<div class="card mb-3">
+    <div class="row g-0">
+        <div class="col-md-4">
+            <img src="{{ listing.image }}" class="img-fluid rounded-start" alt="Listing item image">
         </div>
-        <hr class="prod_hr" />
-        <div class="prod_price">
-            <div class="price">
-                <span class="price_text">
-                    ${{ listing.price }}
-                </span>
+        <div class="col-md-8">
+            <div class="card-body border-dark">
+                <h4 class="card-title shadow-lg p-3 mb-5 bg-body-tertiary rounded">{{ listing.title }}</h4>
             </div>
-        </div>
-        <hr class="prod_hr" />
-        <div class="prod_description">
-            <p>{{ listing.description }}</p>
+            <div class="card-body border-dark">
+                <div class="row">
+                    <div class="col-8 col-sm-10">
+                        <h5 class="card-title">${{ listing.price }}</h6>
+                    </div>
+                    <div class="col-4 col-sm-2 text-right">
+                        {% if listing.is_watchable %}
+                        <div class="watchlist_btn">
+                            <form action="{% url 'edit_watchlist' listing.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit">
+                                    {% load static %}
+                                    <input name="wl_flag" type="hidden" value="False">
+                                    {% if listing.is_in_watchlist %}
+                                    <img src="{% static 'auctions/img/del_watchlist.png' %}"
+                                        alt="Delete from Watchlist">
+                                    {% else %}
+                                    <img src="{% static 'auctions/img/add_watchlist.png' %}" alt="Add to Watchlist">
+                                    {% endif%}
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body border-dark">
+                <p class="card-text">{{ listing.description }}</p>
+            </div>
+            <div class="card-body border-dark">
+                <p class="card-text">
+                    Category: {{ listing.category }}
+                </p>
+            </div>
+            <div class="card-footer">
+                <p class="card-text">
+                    <small class="text-body-secondary">
+                        Created: {{ listing.created_date | date:"Y-m-d" }} by <i>{{ listing.auctioneer }}</i>
+                    </small>
+                </p>
+            </div>
         </div>
     </div>
 </div>
-<hr class="product_hr" />
-<div class="details">
-    <h3>Delails:</h3>
-    <ul>
-        <li>
-            Listed by: {{ listing.auctioneer }}
-        </li>
-        <li>
-            Category: {{ listing.category }}
-        </li>
-        <li>
-            Created: {{ listing.created_date }}
-        </li>
-    </ul>
-</div>
-<hr class="product_hr" />
+<hr />
 <div class="bid_block">
     {% if user.is_authenticated %}
     {% if listing.is_active %}
@@ -86,24 +87,33 @@
     </div>
     {% else %}
     <div class="new_bid">
-        <form action="{% url 'place_bid' listing.id %}" method="post">
-            {% csrf_token %}
-            {% if listing.bid_info.max_bid == 0 %}
-            <p>
-                You would be the first! Place your bid for <b>{{listing.title}}</b>
-            </p>
-            {% else %}
-            <p>
-                {{listing.bid_info.count}} bid(s) so far.
-                {% if listing.bid_info.user_bid %}
-                Your bid is a current bid.
-                {% endif %}
-            </p>
+        {% if listing.bid_info.max_bid == 0 %}
+        <p>
+            You would be the first! Place your bid for <b>{{listing.title}}</b>
+        </p>
+        {% else %}
+        <p>
+            {{listing.bid_info.count}} bid(s) so far.
+            {% if listing.bid_info.user_bid %}
+            Your bid is a current bid.
             {% endif %}
-            <p>{{ bid_message }}</p>
-            <label for="bid">Yout bid in $:</label>
-            <input type="text" class="number-only" id="bid" name="bid" placeholder="Bid in $">
-            <input type="submit" value="Place a bid">
+        </p>
+        {% endif %}
+        <p>{{ bid_message }}</p>
+        <form class="row row-cols-lg-auto g-3 align-items-center" action="{% url 'place_bid' listing.id %}"
+            method="post">
+            {% csrf_token %}
+            <div class="col-12">
+                <label class="visually-hidden" for="bid">Username</label>
+                <div class="input-group">
+                    <div class="input-group-text">$</div>
+                    <input type="text" class="form-control" id="bid" placeholder="Yout bid">
+                </div>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Place a bid</button>
+            </div>
         </form>
     </div>
     {% endif %}
@@ -115,7 +125,6 @@
     {% else %}
     <div class="new_bid">
         <p>Auction is closed.</p>
-
         {% if listing.bid_info.user_bid %}
         <h3>Congradulation! You won the auction!</h3>
         {% endif %}
@@ -126,21 +135,30 @@
     <P> You need to be authorized to place a bid! </P>
     {% endif %}
 </div>
-<hr class="product_hr" />
+<hr/>
+
 <div class="comment_block">
     {% for comment in comments %}
-    <div class="comment">
-        <div class="comment_author"> {{comment.author}}</div>
-        <div class="comment_text"> {{comment.text}}</div>
+    <div class="card card text-bg-light mb-3">
+        <div class="card-header">
+            {{comment.author}}
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{comment.text}}</p>
+        </div>
     </div>
     {% endfor %}
     {% if user.is_authenticated %}
     <div class="comment_form">
         <form action="{% url 'add_comment' listing.id %}" method="post">
             {% csrf_token %}
-            <label for="comment">Add new comment:</label>
-            <textarea class="comment_text" id="comment" name="comment" placeholder="Text your comment" rows="3"></textarea>
-                <div class="field"><input type="submit"></div>
+            <div class="row mb-3">
+                <label for="comment" class="col-sm-2 col-form-label">Add new comment:</label>
+                <div class="col-sm-10">
+                    <textarea class="form-control" id="comment" name="comment" placeholder="Text your comment" rows="3"></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-dark col-sm-1">Submit</button>
         </form>
     </div>
     {% endif %}

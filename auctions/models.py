@@ -70,6 +70,7 @@ class Listing(models.Model):
     def bid_info(self):
         return self._bid_info
     
+    
     objects = models.Manager()
     ownerList = OwnerListManager()
         

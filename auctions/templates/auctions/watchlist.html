@@ -1,74 +1,83 @@
 {% extends "auctions/layout.html" %}
+{% load django_bootstrap5 %}
 {% block title %}
 Watch List
 {% endblock %}
 {% block body %}
 <h2>Active Listings</h2>
 {% if active_list %}
-<div class="active_list_table">
-    {% for item in active_list %}
-    <div class="row">
-        <div class="col_img">
-            <a href="{% url 'listing' item.id %} ">
-                <img src="{{ item.image }}" alt="Listing item image">
-            </a>
-        </div>
-        <div class="col_title">
-            <a href="{% url 'listing' item.id %} ">
-                {{ item.title }}
-            </a>
-        </div>
-        <div class="col_bid">
-            ${{ item.price}}
-        </div>
-        <div class="col_actions">
-            <form action="{% url 'edit_watchlist' item.id %}" method="post">
-                {% csrf_token %}
-                <input name="wl_flag" type="hidden" value="True">
-                <button type="submit">
-                    {% load static %}
-                    <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
-                </button>
-            </form>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+<table class="table table-light table-striped">
+    <tbody>
+        {% for item in active_list %}
+        <tr>
+            <td class="col-1">
+                <a href="{% url 'listing' item.id %} ">
+                    <div class="table_cell_image">
+                        <img src="{{ item.image }}" alt="Listing item image">
+                    </div>
+                </a>
+            </td>
+            <td class="col-6">
+                <a href="{% url 'listing' item.id %} ">
+                    {{ item.title }}
+                </a>
+            </td>
+            <td class="col-5">${{ item.price}}</td>
+            <td class="col-1">
+                <div class="watchlist_btn">
+                    <form action="{% url 'edit_watchlist' item.id %}" method="post">
+                        {% csrf_token %}
+                        <input name="wl_flag" type="hidden" value="True">
+                        <button type="submit" class="btn">
+                            {% load static %}
+                            <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% else %}
 <p> You don't have any active listings in Watch List. Find some interesting item in our auction!</p>
 {% endif %}
 <hr>
 <h2>Closed Listings</h2>
 {% if closed_list %}
-<div class="closed_list_table">
-    {% for item in closed_list %}
-    <div class="row">
-        <div class="col_img">
-            <a href="{% url 'listing' item.id %} ">
-                <img src="{{ item.image }}" alt="Listing item image">
+<table class="table table-secondary table-striped">
+    <tbody>
+        {% for item in closed_list %}
+        <tr>
+            <td class="col-1">
+                <div class="table_cell_image">
+                    <a href="{% url 'listing' item.id %} ">
+                        <img src="{{ item.image }}" alt="Listing item image">
+                    </a>
+                </div>
+            </td>
+            <td class="col-10">
+                <a href="{% url 'listing' item.id %} ">
+                    {{ item.title }}
+                </a>
+            </td>
             </a>
-        </div>
-        <div class="col_title">
-            <a href="{% url 'listing' item.id %} ">
-                {{ item.title }}
-            </a>
-        </div>
-        <div class="col_bid">
-        </div>
-        <div class="col_actions">
-            <form action="{% url 'edit_watchlist' item.id %}" method="post">
-                {% csrf_token %}
-                <input name="wl_flag" type="hidden" value="True">
-                <button type="submit">
-                    {% load static %}
-                    <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
-                </button>
-            </form>
-        </div>
-    </div>
-
-    {% endfor %}
-</div>
+            <td class="col-1">
+                <div class="watchlist_btn">
+                    <form action="{% url 'edit_watchlist' item.id %}" method="post">
+                        {% csrf_token %}
+                        <input name="wl_flag" type="hidden" value="True">
+                        <button type="submit" class="btn">
+                            {% load static %}
+                            <img src="{% static 'auctions/img/del_watchlist.png' %}" alt="Delete from Watchlist">
+                        </button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% else %}
 <p>You don't have any closed listings in Watch List yet.</p>
 {% endif %}

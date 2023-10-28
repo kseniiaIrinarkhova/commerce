@@ -1,28 +1,40 @@
 {% extends "auctions/layout.html" %}
+{% load django_bootstrap5 %}
 
 {% block body %}
+<div class="text-center">
     <h2>Active Listings</h2>
-    {% if listings %}
-    <div class="collection">
+</div>
+{% if listings %}
+<div class="row  row-cols-1 row-cols-md-3 g-4">
     {% for listing in listings %}
-        <div class ="item">
-            <a href = "{% url 'listing' listing.id %}">
-                <div class="grid_frame">
-                    <div class = "grid_image">
-                        <img src="{{ listing.image }}" alt="Listing item image">
-                    </div>
-                    <h3 class="grid_title"> 
-                        {{ listing.title }}
-                    </h3>
-                    <span class="grid_price">
-                        ${{ listing.price }}
-                    </span>
-                </div>
-            </a>
+    <div class="col">
+        <div class="card  border-success h-100">
+            <div class="card-header text-center  border-success">
+                <h5 class="card-title">{{ listing.title }}</h5>
+            </div>
+            <div class="card-body">
+            <figure class="figure">
+                <img src="{{ listing.image }}" class="figure-img img-fluid rounded" alt="No item's image is awailable">
+                <figcaption class="figure-caption">by {{listing.auctioneer}}</figcaption>
+            </figure>
+            </div>
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2 text-body-secondary">${{ listing.price }}</h6>
+            </div>
+            <div class="card-body text-muted">
+                <p class="card-text">{{ listing.description | truncatechars:250 }}.</p>
+            </div>
+            <div class="card-footer text-center border-success">
+                <a href="{% url 'listing' listing.id %}" class="btn btn-secondary">View</a>
+            </div>
         </div>
+    </div>
     {% endfor %}
 
-    {% else %}
-    <p>There is no active items currently. Create the first listing!</p>
-    {% endif %}
+</div>
+
+{% else %}
+<p>There is no active items currently. Create the first listing!</p>
+{% endif %}
 {% endblock %}

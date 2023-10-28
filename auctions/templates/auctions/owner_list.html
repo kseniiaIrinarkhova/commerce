@@ -1,53 +1,51 @@
 {% extends "auctions/layout.html" %}
+{% load django_bootstrap5 %}
 
 {% block body %}
 <h2>Active Listings</h2>
 {% if active_list %}
-<div class="active_list_table">
-    {% for item in active_list %}
-    <div class="row">
-        <div class="col_img">
-            <a href="{% url 'listing' item.id %} "><img src="{{ item.image }}" alt="Listing item image"></a>
-        </div>
-        <div class="col_title">
-            <a href="{% url 'listing' item.id %} ">{{ item.title }}</a>
-        </div>
-        <div class="col_bid">
-            ${{ item.price}}/ ${{item.bid_info.max_bid}} is a max bid
-        </div>
-        <div class="col_actions">
-            <a href="{% url 'edit' item.id %}">Edit</a>
-            <button>Close</button>
-        </div>
 
-    </div>
+<table class="table table-light table-striped">
+    <tbody>
+    {% for item in active_list %}
+        <tr>
+            <td class="col-1">
+                <a href="{% url 'listing' item.id %} ">
+                    <div class="table_cell_image"><img src="{{ item.image }}" alt="Listing item image"></div></a>
+            </td>
+            <td class="col-6">
+                <a href="{% url 'listing' item.id %} ">{{ item.title }}</a>
+            </td>
+            <td class="col-3">${{ item.price}}/ ${{item.bid_info.max_bid}} is a max bid</td>
+            <td class="col-3">
+                <a href="{% url 'edit' item.id %}" class="btn  btn-secondary" >Edit</a>
+                <a href="{% url 'close_auction' item.id %}" class="btn  btn-dark">Close</a>
+            </td>
+        </tr>
     {% endfor %}
-</div>
+    </tbody>
+</table>
 {% else %}
 <p> You don't have any active listings. Create a new one!</p>
 {% endif %}
 <hr>
 <h2>Closed Listings</h2>
 {% if closed_list %}
-<div class="closed_list_table">
-    {% for item in closed_list %}
-    <div class="row">
-        <div class="col_img">
-            <a href="{% url 'listing' item.id %} ">
-                <img src="{{ item.image }}" alt="Listing item image">
-            </a>
-        </div>
-        <div class="col_title">
-            <a href="{% url 'listing' item.id %} ">
-                {{ item.title }}
-            </a>
-        </div>
-        <div class="col_bid">
-            $ {{ item.bid_info.max_bid}} 
-        </div>
-    </div>
-    {% endfor %}
-</div>
+<table class="table table-secondary table-striped">
+    <tbody>
+        {% for item in closed_list %}
+        <tr>
+            <td class="col-1">
+                <a href="{% url 'listing' item.id %} "><div class="table_cell_image"><img src="{{ item.image }}" alt="Listing item image"></div></a>
+            </td>
+            <td class="col-10">
+                <a href="{% url 'listing' item.id %} ">{{ item.title }}</a>
+            </td>
+            <td class="col-2">$ {{ item.bid_info.max_bid}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% else %}
 <p>You don't have any closed listings.</p>
 {% endif %}
