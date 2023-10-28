@@ -50,7 +50,15 @@ class BidForm(ModelForm):
 
 
 def getCategory(categoryTitle):
-    return Category.objects.get(title = categoryTitle)
+    try:
+        category = Category.objects.get(title = categoryTitle)
+        
+    except Category.DoesNotExist:
+        category = Category()
+        category.title = categoryTitle
+        category.save()
+
+    return category 
         
 def getWatchListAction(listing_id, user):
     

@@ -13,9 +13,9 @@
 
 <body>
     <h1>Auctions</h1>
-    <div>
+    <div class="text-right">
         {% if user.is_authenticated %}
-        Signed in as <strong>{{ user.username }}</strong>.
+        Welcome <strong>{{ user}} ({{ user.username }})</strong>.
         {% else %}
         Not signed in.
         {% endif %}
