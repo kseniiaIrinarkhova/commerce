@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-        
+#Owner list manager provide information about owner's active list and closed list        
 class OwnerListManager(models.Manager): 
     def getActiveListings(self,user):
         list = self.filter(auctioneer = user, is_active = True)
@@ -14,6 +14,7 @@ class OwnerListManager(models.Manager):
             item.check_user_related_data(user)      
         return list
 
+#Listing Model
 class Listing(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
@@ -25,28 +26,28 @@ class Listing(models.Model):
     created_date = models.DateTimeField()
     closed_date = models.DateTimeField(blank=True, null=True)
 
-    
-
     def __str__(self):
         return self.title
     
+    #Define additional properties related to the user's information
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._is_watchable = False
         self._is_editable = False
         self._is_in_watchlist = False
         self._bid_info = {'count': 0, 'max_bid': 0, 'user_bid': False}
-        
-        
-    
    
+    #set additioal properties data according to the user
     def check_user_related_data(self, user):
         if user is not None:
             if self.auctioneer != user:
+                #If user is not auctioneer then listing could be added/deleted to user's watch list
                 self._is_watchable = True
                 self._is_in_watchlist = user.watchlist.filter(pk = self.id).exists()
             else:
+                #if listing is owned by user, it could be edited
                 self._is_editable = True
+            #check the bid information
             if Bid.objects.all().filter(context = self).exists():
                 self._bid_info['count'] = Bid.objects.all().filter(context = self).count()
                 self._bid_info['max_bid'] = Bid.objects.all().filter(context = self).last().price
@@ -70,12 +71,13 @@ class Listing(models.Model):
     def bid_info(self):
         return self._bid_info
     
-    
     objects = models.Manager()
+    #custom manager for owner list
     ownerList = OwnerListManager()
         
     
 class User(AbstractUser):
+    #property that represented list of items in user's watch list
     watchlist = models.ManyToManyField(Listing, blank=True, related_name='subscribers')    
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

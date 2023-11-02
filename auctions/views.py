@@ -73,9 +73,12 @@ def listing(request, listing_id):
     listing = Listing.objects.get(pk = listing_id)
     if request.user.is_authenticated:
         user = User.objects.get(username = request.user.username)
+        #get additional information about listing according to the user
         listing.check_user_related_data(user)  
     else:
-        listing.check_user_related_data(None)       
+        #set default value for user related information
+        listing.check_user_related_data(None)   
+
     return render(request, "auctions/listing.html", {
         "listing": listing,        
         "bid_message": "",
@@ -93,6 +96,7 @@ def new_listing(request):
             newListing.auctioneer = User.objects.get(username=request.user.username)
             newListing.created_date = datetime.datetime.now()
             newListing.is_active = True
+            #Try to found existing category or creating a new one
             newListing.category = getCategory(form.cleaned_data["categoryTitle"])
             newListing.save()
             return HttpResponseRedirect(reverse("listing", args=(newListing.id,)))
@@ -127,6 +131,7 @@ def edit(request, listing_id):
             form = ListingForm(request.POST, instance=listing)
             if form.is_valid():
                 listing = form.save(commit=False)
+                #Try to found existing category or creating a new one
                 listing.category = getCategory(form.cleaned_data["categoryTitle"])
                 listing.save()
                 return HttpResponseRedirect(reverse("listing", args=(listing_id,)))
@@ -175,6 +180,7 @@ def place_bid(request, listing_id):
             try:
                 new_bid = float(request.POST['bid'])
                 if new_bid != "" :
+                    #Check if new bid is higher than previous or if there is no bids then higher or equel to the price
                     if checkNewBid(new_bid, listing_id):
                         newBid = Bid()
                         newBid.bidder = user
